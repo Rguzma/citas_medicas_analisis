@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿Por qué los pacientes faltan a sus citas? Resumen del análisis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F7F7;--ink:#14252B;--muted:#53656B;--card:#fff;--line:#D9E1E3;--ok:#0E7C6B;--miss:#D9532B;--soft:#E7F0EF;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1A1E;--ink:#E8F0F1;--muted:#9FB1B6;--card:#16252A;--line:#28383D;--ok:#3CC2A7;--miss:#FF8A5C;--soft:#1B2E33}}
+:root[data-theme="dark"]{--bg:#0F1A1E;--ink:#E8F0F1;--muted:#9FB1B6;--card:#16252A;--line:#28383D;--ok:#3CC2A7;--miss:#FF8A5C;--soft:#1B2E33}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 "IBM Plex Sans",system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:56px 22px 80px}
+h1,h2{font-family:"Source Serif 4",Georgia,serif;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,6vw,3rem);margin:28px 0 18px}
+h2{font-size:clamp(1.45rem,4vw,1.9rem);margin:64px 0 14px}
+h3{font-size:1rem;margin:0 0 4px}
+p{margin:0 0 14px;max-width:66ch}
+.muted{color:var(--muted)}
+.dots{display:flex;gap:10px;flex-wrap:wrap}
+.dots i{width:34px;height:34px;border-radius:50%;background:var(--ok)}
+.dots i.m{background:var(--miss)}
+.lead{font-size:1.15rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:20px 0}
+.box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.box b{font:700 1.7rem "Source Serif 4",Georgia,serif;display:block}
+.term{background:var(--soft);border-left:4px solid var(--ok);padding:14px 18px;margin:18px 0;border-radius:0 8px 8px 0}
+.term p{margin:0 0 6px}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px;margin:18px 0}
+.row{display:grid;grid-template-columns:104px 1fr 56px;gap:10px;align-items:center;margin:9px 0;font-size:.95rem}
+.track{position:relative;height:22px;background:var(--soft);border-radius:4px}
+.track i{display:block;height:100%;background:var(--miss);border-radius:4px}
+.track u{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);opacity:.6}
+.row b{text-align:right}
+.row small{display:block;color:var(--muted);font-size:.75rem;line-height:1.1}
+.cap{font-size:.85rem;color:var(--muted);margin:12px 0 0}
+.take{font-weight:600}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{font:500 .9rem "IBM Plex Sans",sans-serif;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tabs button:focus-visible{outline:3px solid var(--ok);outline-offset:2px}
+.cols{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;align-items:end;height:220px;border-bottom:1px solid var(--line)}
+.col{display:flex;gap:3px;align-items:flex-end;justify-content:center;height:100%}
+.bar{width:100%;max-width:26px;position:relative;border-radius:3px 3px 0 0;min-height:2px}
+.bar span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:.66rem;margin-bottom:2px;white-space:nowrap}
+.bar.n{background:var(--miss)}.bar.s{background:var(--ok)}
+.xl{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;text-align:center;font-size:.72rem;color:var(--muted);margin-top:6px}
+.key{display:flex;gap:18px;font-size:.85rem;margin-top:12px;flex-wrap:wrap}
+.key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+ol,ul{padding-left:1.2rem;max-width:66ch}li{margin-bottom:8px}
+footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+@media(max-width:520px){.row{grid-template-columns:84px 1fr 48px}.dots i{width:26px;height:26px}.bar span{font-size:.58rem}}
+</style>
+</head>
+<body>
+<main>
+<div class="dots" role="img" aria-label="5 círculos: 4 verdes y 1 naranja"><i></i><i></i><i></i><i></i><i class="m"></i></div>
+<h1>De cada 5 citas médicas, 1 se pierde porque el paciente no llega</h1>
+<p class="lead">Este documento resume los hallazgos al analizar los datos de más de 110 000 citas agendadas en un centro médico en Brasil, durante un plazo aproximado de dos meses, con el objetivo de identificar qué factores se asocian con la inasistencia de los pacientes.</p>
+<p>Este estudio es relevante porque podemos identificar que, mientras 88 208 de las citas se concretaron (80 %), 22 319  (20 %) terminaron en ausencia del paciente. Es decir, de cada 5 citas agendadas 1 no se lleva a cabo. Reducir esa cifra podría ahorrar al centro médico tiempo de preparación para servicios que no se prestan y, potencialmente, mejorar sus ingresos.</p>
+
+<h2>Qué datos se analizaron</h2>
+<p>Un registro público de citas médicas de 2016 (publicado en Kaggle). Cada fila es una cita e indica quién es el paciente, su edad, cuándo se agendó la cita, el día de la cita, si recibió un mensaje de texto (SMS) y, lo más importante, si asistió o no.</p>
+<div class="grid">
+<div class="box"><b>110 527</b>citas analizadas</div>
+<div class="box"><b>62 299</b>pacientes distintos (varios tuvieron más de una cita)</div>
+<div class="box"><b>20,2 %</b>de las citas (22 319) terminaron en inasistencia</div>
+</div>
+<div class="term">
+<p><strong>Inasistencia (“no-show”):</strong> el paciente tenía una cita y no se presentó.</p>
+<p><strong>Tasa de inasistencia:</strong> de cada 100 citas, cuántas no se cumplen.</p>
+<p><strong>Días de espera:</strong> el dato se refiere a los días que pasan entre agendar la cita y la fecha en que debe asistir.</p>
+</div>
+<p>El análisis buscó responder cinco preguntas: cuántas citas se pierden, si la edad es un factor que influye, si los días de espera entre el día que se agenda y el día de la cita afectan, si el SMS de recordatorio ayuda a reducir la inasistencia, y si estos factores se afectan entre sí.</p>
+
+<h2>Limpieza de datos</h2>
+<p>La base de datos tenía algunas pocas inconsistencias, como datos imposibles: una edad cuyo valor es negativo, y 5 citas con fechas incoherentes (día de la cita aparecía antes del día que se agendó). Esos registros se excluyeron de los cálculos. Quedaron 5 pacientes de 115 años: el valor es sospechoso, pero no hubo prueba suficiente para descartarlos.</p>
+
+<h2>Hallazgo 1: los jóvenes faltan más que los mayores</h2>
+<p>La diferencia no es enorme, pero es clara: los adultos jóvenes (18 a 34 años) son quienes más faltan y los adultos mayores quienes menos.</p>
+<div class="chart">
+<div id="edad"></div>
+<p class="cap">La línea vertical marca el promedio general (20,2 %). Entre paréntesis, la proporción del total de citas que representa cada grupo.</p>
+</div>
+<p class="take">Ojo: los adultos de 35 a 64 años concentran el 40 % de las citas, así que su comportamiento pesa más en el total.</p>
+
+<h2>Hallazgo 2: esperar mucho aumenta las ausencias</h2>
+<p>Cuando la cita es el mismo día, casi todos asisten (probablemente porque hay urgencia). Con solo 1 a 6 días de espera, las ausencias ya se multiplican por cinco, y siguen subiendo hasta las esperas de 30 a 59 días. Con 60 días o más hay un leve descenso.</p>
+<div class="chart">
+<div id="espera"></div>
+<p class="cap">Entre paréntesis, cantidad de citas en cada grupo: las de 60 días o más son pocas en proporción al total (2 168), así que ese dato es menos firme.</p>
+</div>
+
+<h2>Hallazgo 3: El SMS parece no funcionar, pero sí ayuda</h2>
+<p>Si se revisan los datos en bruto, pareciera que quienes recibieron un SMS faltaron más: del total de quienes recibieron el SMS, hubo un <strong>27,6 %</strong> de inasistencia, frente a <strong>16,7 %</strong> de quienes no lo recibieron. Eso llevaría a pensar que el mensaje no sirve o incluso perjudica.</p>
+<p>La razón es que <strong>el SMS no se envía cuando la cita es el mismo día</strong>, y esas citas son las que menos se pierden. El grupo “sin SMS” está lleno de citas fáciles de cumplir, así que la comparación directa engaña.</p>
+<p>La comparación justa es entre citas con el mismo tiempo de espera y de la misma edad. Elija un grupo de edad:</p>
+<div class="chart">
+<div class="tabs" id="tabs" role="group" aria-label="Grupo de edad"></div>
+<div class="cols" id="cols"></div>
+<div class="xl" id="xl"></div>
+<div class="key"><span><i style="background:var(--miss)"></i>Sin SMS</span><span><i style="background:var(--ok)"></i>Con SMS</span></div>
+<p class="cap">Tasa de inasistencia (%) según días de espera. En el mismo día no se envió SMS, por eso no hay barra verde.</p>
+</div>
+<p>Al comparar de forma justa, <strong>el SMS reduce la inasistencia en 19 de las 20 combinaciones</strong> de edad y espera (la excepción: en adultos jóvenes con 1 a 6 días de espera, la inasistencia sube de 27,9 % a 29,7 %). El efecto es más grande donde más se falta: en menores de edad con 60 días o más de espera, baja de 60 % a 34 %.</p>
+
+<h2>Qué se concluye</h2>
+<ul>
+<li>El problema es grande: 1 de cada 5 citas se pierde.</li>
+<li>Mientras más tiempo pasa entre agendar y asistir, más probable es que el paciente falte.</li>
+<li>Los menores de edad y los adultos jóvenes son los más propensos a faltar, sobre todo con esperas largas.</li>
+<li>Los adultos de 35 a 64 años son el grupo más numeroso. Reducir sus ausencias con esperas de 14 a 59 días tendría el mayor impacto total.</li>
+<li>El SMS ayuda cuando se compara de forma justa, pero no resuelve el problema por sí solo.</li>
+</ul>
+
+<h2>Qué se recomienda hacer</h2>
+<ol>
+<li><strong>Probar otros canales de aviso</strong> (WhatsApp, llamada, correo) y medir cuál funciona mejor.</li>
+<li><strong>Registrar el motivo de cada inasistencia.</strong> Hoy se desconoce si influyen el costo, la distancia u otras razones. Preguntar al paciente puede brindar nuevas ideas y estrategias.</li>
+<li><strong>Separar a los pacientes con varias citas</strong> y distinguir a los que suelen asistir de los que suelen faltar.</li>
+<li><strong>Revisar el día de la semana</strong> de la cita, para ver si hay días con más ausencias.</li>
+</ol>
+<h2>Cómo leer estos resultados</h2>
+<p>Este análisis es exploratorio: describe patrones y relaciones, pero no prueba causas. Por ejemplo, que el SMS vaya de la mano con menos ausencias no prueba que él las evite por sí solo, puede haber otros factores detrás. No obstante, funciona como punto de partida para planificar estrategias y decidir qué probar.</p>
+<footer>Resumen basado en el notebook “EDA Patients No-Show” de Ricardo Guzmán. Datos: Medical Appointment No Shows (disponible en el sitio Kaggle: <a href="https://www.kaggle.com/datasets/joniarroba/noshowappointments/data" target="_blank">https://www.kaggle.com/datasets/joniarroba/noshowappointments/data</a>. Subido por el usuario JoniHoppen).</footer>
+</main>
+<script>
+const fmt=v=>(Math.round(v*10)/10).toFixed(1).replace('.',',');
+function rows(id,items,max,avg){
+  document.getElementById(id).innerHTML=items.map(([l,v,n,approx])=>
+    `<div class="row"><span>${l}<small>${n}</small></span><div class="track"><i style="width:${v/max*100}%"></i>${avg?`<u style="left:${avg/max*100}%"></u>`:''}</div><b>${approx?'~':''}${fmt(v)}%</b></div>`).join('');
+}
+rows('edad',[['0 a 17 años',21.9,'(25 %)'],['18 a 34 años',24.0,'(22 %)'],['35 a 64 años',18.6,'(40 %)'],['65 o más',15.5,'(13 %)']],40,20.2);
+rows('espera',[['Mismo día',4.65,'(38 563)'],['1 a 6 días',23.69,'(27 279)'],['7 a 13 días',28.96,'(14 018)'],['14 a 29 días',32.62,'(19 580)'],['30 a 59 días',33.49,'(8 914)'],['60 o más',28.92,'(2 168)']],40,20.2);
+
+const W=['Mismo día','1–6 días','7–13 días','14–29 días','30–59 días','60 o más'];
+const D={
+'0 a 17':{n:[6.9,27.6,33.3,39.9,43.7,60.0],s:[null,26.8,28.3,30.9,34.4,33.8]},
+'18 a 34':{n:[4.6,27.9,37.0,42.5,43.4,48.6],s:[null,29.7,33.8,36.3,36.6,37.2]},
+'35 a 64':{n:[3.5,22.8,28.7,35.2,33.9,27.4],s:[null,20.4,24.4,27.4,28.2,22.2]},
+'65 o más':{n:[2.6,19.2,21.4,27.8,23.7,29.4],s:[null,18.1,20.6,19.9,19.5,22.6]}};
+const bar=(c,v)=>v==null?'':`<div class="bar ${c}" style="height:${v/65*100}%"><span>${Math.round(v)}</span></div>`;
+function show(k){
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+  const d=D[k];
+  document.getElementById('cols').innerHTML=W.map((w,i)=>`<div class="col">${bar('n',d.n[i])}${bar('s',d.s[i])}</div>`).join('');
+}
+document.getElementById('xl').innerHTML=W.map(w=>`<span>${w}</span>`).join('');
+document.getElementById('tabs').innerHTML=Object.keys(D).map(k=>`<button type="button" data-k="${k}" aria-pressed="false">${k}</button>`).join('');
+document.getElementById('tabs').addEventListener('click',e=>{if(e.target.dataset.k)show(e.target.dataset.k)});
+show('0 a 17');
+</script>
+</body>
+</html>
